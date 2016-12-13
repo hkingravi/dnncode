@@ -13,3 +13,6 @@ chmod +x install_dependencies.sh
 ./install_dependencies.sh
 python setup.py develop
 ```
+
+# Committing Code
+
