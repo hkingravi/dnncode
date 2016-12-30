@@ -13,32 +13,12 @@ data_full = os.path.abspath(os.path.join(data_dir, "cifar_full.pkl"))
 np.random.seed(0)
 
 # load data
-load_data = True
-
-if load_data:
-    print "Loading data from cached file " + data_full + "..."
-    load_t = time.time()
-    data_full_dict = pickle.load(open(data_full, "rb"))
-    data = data_full_dict['data']
-    labels = data_full_dict['labels']
-    print "Time taken to load data: " + str(time.time()-load_t)
-else:
-    print "Generating data from batches..."
-    gen_t = time.time()
-    batch_inds = [1, 2, 3, 4, 5]
-    data = []
-    labels = []
-    for curr_ind in batch_inds:
-        data_file = "data_batch_" + str(curr_ind)
-        batch_file = os.path.abspath(os.path.join(data_dir, data_file))
-        dict_dat = unpickle(batch_file)
-        data.append(dict_dat['data'])
-        labels.append(np.array(dict_dat['labels']))
-
-    data = np.vstack(data)
-    labels = np.hstack(labels)
-    pickle.dump({'data': data, 'labels': labels}, open(data_full, "wb"))
-    print "Time taken to generate data: " + str(time.time()-gen_t)
+print "Loading data from cached file " + data_full + "..."
+load_t = time.time()
+data_full_dict = pickle.load(open(data_full, "rb"))
+data = data_full_dict['data']
+labels = data_full_dict['labels']
+print "Time taken to load data: " + str(time.time()-load_t)
 
 # make up weight matrix to test
 nsamp = data.shape[0]

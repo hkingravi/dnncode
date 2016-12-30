@@ -2,7 +2,7 @@
 Utilities for implementing deep neural networks.
 """
 import cPickle
-import numpy as np
+from colorsys import hsv_to_rgb
 
 
 def unpickle(file_in):
@@ -29,3 +29,16 @@ def gen_image(im_vec, width=32, height=32):
     """
     return im_vec.reshape(3, width, height).transpose(1, 2, 0)
 
+
+def gencolorarray(numcolors):
+    # ensure numcolors is an integer by using exception
+    color_list = []
+    try:
+        for i in xrange(1, numcolors + 1):
+            p_color = float(i) / numcolors
+            color_val = hsv_to_rgb(p_color, 1, 1)
+            color_list.append(color_val)
+    except:
+        print "numcolors must be an integer\n"
+
+    return color_list

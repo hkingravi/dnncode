@@ -104,7 +104,7 @@ def hinge_loss_grad_slow(data, labels, weights):
     return np.vstack(curr_grads)
 
 
-def hinge_loss_grad(data, labels, weights):
+def hinge_loss_grad(data, labels, weights, reg_val=0.0):
     """
     Compute hinge-loss gradient analytically. See notes on derivation and
     numpy tricks utilized to speed up compute time (broadcasting, and in-place
@@ -113,6 +113,7 @@ def hinge_loss_grad(data, labels, weights):
     :param data: holds all the training examples as columns (e.g. 3073 x 50,000 in CIFAR-10)
     :param labels: array of integers specifying correct class (e.g. 50,000 array)
     :param weights: are weights (e.g. 10 x 3073)
+    :param reg_val: regularization value
     :return:
     """
     delta = 1.0
@@ -125,7 +126,7 @@ def hinge_loss_grad(data, labels, weights):
     grad[labels, indexer] = 0  # neutralize correct labels
     grad[np.nonzero(grad > 0)] = 1
     grad[labels, indexer] = -np.sum(grad, axis=0)  # assign summed values
-    grad = (1/float(nsamp))*data.dot(grad.T)
+    grad = (1/float(nsamp))*data.dot(grad.T) + 2*reg_val*weights.T
     return grad.T
 
 

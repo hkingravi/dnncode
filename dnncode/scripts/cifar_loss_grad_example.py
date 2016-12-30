@@ -29,7 +29,7 @@ def CIFAR_loss_hinge_part(W):
     return curr_loss/float(labels.shape[0])
 
 subsample = True
-compute_numerical = True
+compute_numerical = False
 data_dir = "../datasets/cifar-10-batches-py/"
 data_file = "data_batch_" + str(1)
 batch_file = os.path.abspath(os.path.join(data_dir, data_file))
@@ -74,7 +74,6 @@ if compute_numerical:
         print "For step size %f new loss: %f" % (step_size, loss_new)
     print "Loss computation time over 10 steps: " + str(time.time()-s_t) + " seconds."
 
-
 print "Computing analytical gradient steps..."
 print "Original loss: %f" % (loss_original, )
 
@@ -108,18 +107,19 @@ plt.figure()
 plt.imshow(full_img)
 plt.title("Analytical gradient vector on CIFAR-10: " + str(nrows) + "x" + str(ncols) + " grid")
 
-row_imgs = []
-rows = []
-for i in range(0, nrows):
-    imgs = df[i*ncols:(i+1)*ncols, :]
-    for j in range(0, ncols):
-        row_imgs.append(gen_image(imgs[j, :]))
-    rows.append(np.hstack(row_imgs))
+if compute_numerical:
     row_imgs = []
+    rows = []
+    for i in range(0, nrows):
+        imgs = df[i*ncols:(i+1)*ncols, :]
+        for j in range(0, ncols):
+            row_imgs.append(gen_image(imgs[j, :]))
+        rows.append(np.hstack(row_imgs))
+        row_imgs = []
 
-full_img = np.vstack(rows)
-plt.figure()
-plt.imshow(full_img)
-plt.title("Numerical gradient vector on CIFAR-10: " + str(nrows) + "x" + str(ncols) + " grid")
+    full_img = np.vstack(rows)
+    plt.figure()
+    plt.imshow(full_img)
+    plt.title("Numerical gradient vector on CIFAR-10: " + str(nrows) + "x" + str(ncols) + " grid")
 
 plt.show()
