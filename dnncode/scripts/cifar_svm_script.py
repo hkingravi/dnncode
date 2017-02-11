@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from dnncode.datasets import load_CIFAR10
-from dnncode.classifiers import svm_loss, LinearSVM, grad_check_sparse
+from dnncode.classifiers import loss_svm, LinearSVM, grad_check_sparse
 
 data_dir = "../datasets/cifar-10-batches-py/"
 
@@ -117,19 +117,19 @@ print X_train.shape, X_val.shape, X_test.shape, X_dev.shape
 # generate a random SVM weight matrix of small numbers
 W = np.random.randn(10, 3073) * 0.0001
 
-loss, grad = svm_loss(W, X_dev, y_dev, 0.00001)
+loss, grad = loss_svm(W, X_dev, y_dev, 0.00001)
 print 'loss: %f' % (loss, )
 
 # Numerically compute the gradient along several randomly chosen dimensions, and
 # compare them with your analytically computed gradient. The numbers should match
 # almost exactly along all dimensions.
-f = lambda w: svm_loss(w, X_dev, y_dev, 0.0)[0]
+f = lambda w: loss_svm(w, X_dev, y_dev, 0.0)[0]
 grad_numerical = grad_check_sparse(f, W, grad)
 
 # do the gradient check once again with regularization turned on
 # you didn't forget the regularization gradient did you?
-loss, grad = svm_loss(W, X_dev, y_dev, 1e2)
-f = lambda w: svm_loss(w, X_dev, y_dev, 1e2)[0]
+loss, grad = loss_svm(W, X_dev, y_dev, 1e2)
+f = lambda w: loss_svm(w, X_dev, y_dev, 1e2)[0]
 grad_numerical = grad_check_sparse(f, W, grad)
 
 svm = LinearSVM()

@@ -96,17 +96,17 @@ class LinearSVM(LinearClassifier):
         :param reg: regularization value (positive float)
         :return:
         """
-        return svm_loss(weights=self.W, data=X_batch, labels=y_batch, reg=reg)
+        return loss_svm(weights=self.W, data=X_batch, labels=y_batch, reg=reg)
 
 
 class Softmax(LinearClassifier):
     """ A subclass that uses the Softmax + Cross-entropy loss function """
 
     def loss(self, X_batch, y_batch, reg):
-        return loss_softmax(data=X_batch, labels=y_batch, weights=self.W, reg=reg)
+        return loss_softmax(data=X_batch, labels=y_batch, weights=self.W, reg_val=reg)
 
 
-def svm_loss(weights, data, labels, reg):
+def loss_svm(weights, data, labels, reg):
     """
     Compute regularized hinge-loss on the data, and return the loss and its gradient.
 

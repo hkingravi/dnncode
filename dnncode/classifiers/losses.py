@@ -96,7 +96,7 @@ def loss_softmax_partvec(x, y, W):
     return p[y]
 
 
-def loss_softmax(data, labels, weights, reg_val=0):
+def loss_softmax(data, labels, weights, reg_val=0, dataform="column"):
     """
     Implement softmax loss on multiclass data using normalization trick to avoid
     over/underflow. Here, N denotes number of samples, D the dimensionality of
@@ -106,12 +106,38 @@ def loss_softmax(data, labels, weights, reg_val=0):
     :param labels: N dim vector
     :param weights: K x D weight matrix
     :param reg_val: regularization value
+    :param dataform: whether data is row or column major
     :return:
     """
     nsamp = labels.shape[0]
-    scores = weights.dot(data.T)
-    scores -= np.max(scores, axis=0)
-    p = np.exp(scores)/np.sum(np.exp(scores), axis=0)
-    loss_val = (1/float(nsamp))*p[labels, np.arange(labels.shape[0])] + (reg_val / 2 * float(nsamp)) * np.sum(np.sum(weights, axis=0))
-    return loss_val
+
+    if dataform == "column":
+        scores = weights.dot(data)
+        scores -= np.max(scores, axis=0)
+        probs = np.exp(scores)/np.sum(np.exp(scores), axis=0)
+        correct_logprobs = -np.log(probs[labels, np.arange(nsamp)])
+    else:
+        scores = data.dot(weights)
+        scores -= np.max(scores, axis=1, keepdims=True)
+        probs = np.exp(scores) / np.sum(np.exp(scores), axis=1, keepdims=True)
+        correct_logprobs = -np.log(probs[range(nsamp), labels])
+    data_loss = np.sum(correct_logprobs)/float(nsamp)
+    reg_loss = 0.5*reg_val*np.sum(weights*weights)
+    loss_val = data_loss + reg_loss
+
+    # compute gradient
+    dscores = probs
+    if dataform == "column":
+        dscores[labels, np.arange(nsamp)] -= 1.0
+    else:
+        dscores[np.arange(nsamp), labels] -= 1.0
+    dscores /= nsamp
+
+    # backpropagate gradient to parameters W
+    if dataform == "column":
+        dW = np.dot(dscores, data.T)
+    else:
+        dW = np.dot(data.T, dscores)
+    dW += reg_val*weights
+    return loss_val, dW
 
